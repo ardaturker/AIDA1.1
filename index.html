@@ -71,34 +71,41 @@
     .demo-text p {
       margin-bottom: 20px;
     }
-    .demo-video {
+    .carousel-container {
       flex: 1 1 300px;
+      max-width: 320px;
+      position: relative;
+      overflow: hidden;
+      background-color: #000;
       border: 4px solid #FF6600;
       border-radius: 8px;
-      overflow: hidden;
-      position: relative;
-      padding-top: 177.78%; /* 9:16 aspect ratio */
-      background-color: #000; /* fallback for video placeholder */
     }
-    .demo-video iframe {
+    .carousel-slide {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+    .carousel-slide iframe {
+      width: 300px;
+      height: 534px; /* smaller 9:16 */
+      flex-shrink: 0;
+    }
+    .carousel-btn {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-    .demo-btn {
-      display: inline-block;
-      margin-top: 16px;
-      background-color: #FF6600;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.5);
       color: #FFFFFF;
-      padding: 12px 24px;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
       border-radius: 4px;
-      font-weight: 600;
-      transition: background-color 0.2s ease;
+      font-size: 1rem;
     }
-    .demo-btn:hover {
-      background-color: #E65500;
+    #prevBtn {
+      left: 8px;
+    }
+    #nextBtn {
+      right: 8px;
     }
 
     /* === “Did You Know?” POP-UP / CAROUSEL === */
@@ -250,6 +257,14 @@
       .social-card {
         width: 90%;
       }
+      .carousel-container {
+        max-width: 100%;
+      }
+      .carousel-slide iframe {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 9 / 16;
+      }
     }
   </style>
 </head>
@@ -265,18 +280,37 @@
             Watch a short demo that walks you through choosing an expert, allocating your budget, 
             and automatically replicating their trades—no experience required.
           </p>
-          <a href="#demo-video" class="demo-btn">Play Demo</a>
+          <a href="#" class="demo-btn">Play Demo</a>
         </div>
-        <div id="demo-video" class="demo-video">
-          <!-- Placeholder for a portrait-oriented (9:16) demo video -->
-          <!-- Replace `src` with your actual video embed (e.g., Vimeo/YouTube) -->
-          <iframe 
-            src="https://www.youtube.com/embed/ScMzIvxBSi4?rel=0" 
-            title="Copy Trading Demo"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-          </iframe>
+        <div class="carousel-container">
+          <div id="carouselSlide" class="carousel-slide">
+            <!-- Video 1 -->
+            <iframe 
+              src="https://www.youtube.com/embed/ScMzIvxBSi4?rel=0" 
+              title="Copy Trading Demo 1"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+            <!-- Video 2 -->
+            <iframe 
+              src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" 
+              title="Copy Trading Demo 2"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+            <!-- Video 3 -->
+            <iframe 
+              src="https://www.youtube.com/embed/9bZkp7q19f0?rel=0" 
+              title="Copy Trading Demo 3"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <button id="prevBtn" class="carousel-btn">‹</button>
+          <button id="nextBtn" class="carousel-btn">›</button>
         </div>
       </div>
     </div>
@@ -348,8 +382,31 @@
     </div>
   </section>
 
-  <!-- ========== JAVASCRIPT FOR MODAL ========== -->
+  <!-- ========== JAVASCRIPT FOR CAROUSEL & MODAL ========== -->
   <script>
+    // Carousel Logic
+    const carouselSlide = document.getElementById('carouselSlide');
+    const iframes = document.querySelectorAll('#carouselSlide iframe');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let counter = 0;
+    const size = iframes[0].clientWidth;
+
+    function updateCarousel() {
+      carouselSlide.style.transform = 'translateX(' + (-size * counter) + 'px)';
+    }
+
+    nextBtn.addEventListener('click', () => {
+      counter = (counter + 1) % iframes.length;
+      updateCarousel();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      counter = (counter - 1 + iframes.length) % iframes.length;
+      updateCarousel();
+    });
+
+    // Modal Logic
     const modal = document.getElementById("barrierModal");
 
     function openModal() {
@@ -359,7 +416,6 @@
       modal.style.display = "none";
     }
 
-    // Close modal if user clicks outside of the content area
     window.onclick = function(event) {
       if (event.target === modal) {
         closeModal();
